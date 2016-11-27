@@ -2,6 +2,7 @@
   "mqtt_client_id": "power_meter",
   "mqtt_host": "192.168.0.210",
   "mqtt_port": "1883",
+  "verbose": "true",
   "sources": [
     {
       "serial": "10-0008031e4d9e",
