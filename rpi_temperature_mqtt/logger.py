@@ -101,7 +101,6 @@ class TemperatureLogger:
     def start_sources(self):
         for source in self.config['sources']:
             TemperatureSource(source['serial'], source['topic'], self.publish_temperature)
-            time.sleep(30)
 
     def publish_temperature(self, topic, temperature):
         if self.mqtt_connected:
