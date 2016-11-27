@@ -82,7 +82,7 @@ class TemperatureLogger:
                 match = re.search(r'[^=]*=([\d]+)', raw)
                 if match:
                     temperature = round(float(match.group(1))/1000, 2)
-                    if self.temperatures[serial] != temperature:
+                    if serial not in self.temperatures or self.temperatures[serial] != temperature:
                         self.temperatures[serial] = temperature
                         self.publish_temperature(topic, temperature)
                 time.sleep(5)
