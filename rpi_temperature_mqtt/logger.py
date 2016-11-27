@@ -82,7 +82,9 @@ class TemperatureLogger:
                 source.close()
                 match = re.search(r'[^=]*=([\d]+)', raw)
                 if match:
-                    temperature = round(float(match.group(1))/1000, 2)
+                    temperature_raw = match.group(1)
+                    self.verbose(temperature_raw)
+                    temperature = round(float(temperature_raw)/1000, 2)
                     self.verbose(str(temperature))
                     if serial not in self.temperatures or self.temperatures[serial] != temperature:
                         self.temperatures[serial] = temperature
