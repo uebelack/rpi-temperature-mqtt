@@ -8,39 +8,12 @@ import traceback
 import paho.mqtt.client as mqtt
 from threading import Thread
 
-
-class TemperatureSource:
-    serial = None
-    topic = None
-    worker = None
-    callback = None
-    temperature = None
-
-    def __init__(self, serial, topic, callback):
-        self.serial = serial
-        self.topic = topic
-        self.callback = callback
-        self.worker = Thread(target=self.start)
-        self.worker.setDaemon(True)
-        self.worker.start()
-
-    def start(self):
-        while True:
-            source = open('/sys/bus/w1/devices/' + self.serial + '/w1_slave')
-            raw = source.read()
-            source.close()
-            match = re.search(r'[^=]*=([\d]+)', raw)
-            if match:
-                temperature = round(float(match.group(1))/1000, 2)
-                if self.temperature != temperature:
-                    self.temperature = temperature
-                    self.callback(self.topic, temperature)
-            time.sleep(300)
-
 class TemperatureLogger:
     config = None
     mqtt_client = None
     mqtt_connected = False
+    worker = None
+    temperatures = {}
 
     def __init__(self, config):
         self.config = config
@@ -98,9 +71,22 @@ class TemperatureLogger:
         except socket.error:
             return False
 
-    def start_sources(self):
-        for source in self.config['sources']:
-            TemperatureSource(source['serial'], source['topic'], self.publish_temperature)
+    def update(self):
+        while True:
+            for source in self.config['sources']:
+                serial = source['serial']
+                topic = source['topic']
+                source = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
+                raw = source.read()
+                source.close()
+                match = re.search(r'[^=]*=([\d]+)', raw)
+                if match:
+                    temperature = round(float(match.group(1))/1000, 2)
+                    if self.temperatures[serial] != temperature:
+                        self.temperatures[serial] = temperature
+                        self.publish_temperature(topic, temperature)
+                time.sleep(5)
+            time.sleep(300)
 
     def publish_temperature(self, topic, temperature):
         if self.mqtt_connected:
@@ -108,5 +94,7 @@ class TemperatureLogger:
             self.mqtt_client.publish(topic, str(temperature), 0, True)
 
     def start(self):
-        self.start_sources()
+        self.worker = Thread(target=self.update)
+        self.worker.setDaemon(True)
+        self.worker.start()
         self.mqtt_connect()
