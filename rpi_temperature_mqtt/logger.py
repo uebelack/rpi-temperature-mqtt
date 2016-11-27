@@ -35,7 +35,7 @@ class TemperatureSource:
                 if self.temperature != temperature:
                     self.temperature = temperature
                     self.callback(self.topic, temperature)
-            time.sleep(60)
+            time.sleep(300)
 
 class TemperatureLogger:
     config = None
@@ -101,6 +101,7 @@ class TemperatureLogger:
     def start_sources(self):
         for source in self.config['sources']:
             TemperatureSource(source['serial'], source['topic'], self.publish_temperature)
+            time.sleep(30)
 
     def publish_temperature(self, topic, temperature):
         if self.mqtt_connected:
