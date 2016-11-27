@@ -78,18 +78,16 @@ class TemperatureLogger:
                 topic = source['topic']
                 source = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
                 raw = source.read()
-                self.verbose(raw)
                 source.close()
                 match = re.search(r't=([\d]+)', raw)
                 if match:
                     temperature_raw = match.group(1)
-                    self.verbose(temperature_raw)
                     temperature = round(float(temperature_raw)/1000, 2)
-                    self.verbose(str(temperature))
                     if serial not in self.temperatures or self.temperatures[serial] != temperature:
                         self.temperatures[serial] = temperature
                         self.publish_temperature(topic, temperature)
-            time.sleep(10)
+                time.sleep(5)
+            time.sleep(300)
 
     def publish_temperature(self, topic, temperature):
         if self.mqtt_connected:
