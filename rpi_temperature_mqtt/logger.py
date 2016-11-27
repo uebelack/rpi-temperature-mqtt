@@ -80,7 +80,7 @@ class TemperatureLogger:
                 raw = source.read()
                 self.verbose(raw)
                 source.close()
-                match = re.search(r'[^=]*=([\d]+)', raw)
+                match = re.search(r't=([\d]+)', raw)
                 if match:
                     temperature_raw = match.group(1)
                     self.verbose(temperature_raw)
