@@ -1,5 +1,5 @@
 {
-  "mqtt_client_id": "power_meter",
+  "mqtt_client_id": "rpi-temperature",
   "mqtt_host": "192.168.0.210",
   "mqtt_port": "1883",
   "verbose": "true",
