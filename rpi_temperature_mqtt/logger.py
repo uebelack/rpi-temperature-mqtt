@@ -38,7 +38,7 @@ class TemperatureLogger:
             self.mqtt_client.on_disconnect = self.mqtt_on_disconnect
 
             try:
-                self.mqtt_client.connect(self.config['mqtt_host'], int(self.config['mqtt_port']), 10)
+                self.mqtt_client.connect(self.config['mqtt_host'], int(self.config['mqtt_port']), 60)
                 self.mqtt_client.loop_forever()
             except:
                 self.error(traceback.format_exc())
