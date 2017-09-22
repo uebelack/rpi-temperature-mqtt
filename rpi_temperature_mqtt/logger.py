@@ -76,13 +76,17 @@ class TemperatureLogger:
             for source in self.config['sources']:
                 serial = source['serial']
                 topic = source['topic']
-                source = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
-                raw = source.read()
-                source.close()
+                device = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
+                raw = device.read()
+                device.close()
                 match = re.search(r't=([\d]+)', raw)
                 if match:
                     temperature_raw = match.group(1)
                     temperature = round(float(temperature_raw)/1000, 2)
+
+                    if 'offset' in source:
+                        temperature += float(source['offset'])
+
                     if serial not in self.temperatures or self.temperatures[serial] != temperature:
                         self.temperatures[serial] = temperature
                         self.publish_temperature(topic, temperature)
