@@ -38,14 +38,20 @@ Needs a json configuration file as follows (don't forget to change ip and creden
     }
 
 
-Optional json vaeriables:
+Optional json variables:
 -------------------
-        // wait before query all sensors again (defaults to 300)
-        "wait_update": "60",
-        // wait between sensors (defaults to 5)
-        "wait_process": "3",
-        "mqtt_user": "username",
-        "mqtt_password": "password",
+
+// wait before query all sensors again (defaults to 300)
+    "wait_update": "60",
+    
+// wait between sensor reads (defaults to 5)
+    "wait_process": "3",
+    
+// in case mqtt has user and passwd
+    "mqtt_user": "username",
+    
+    "mqtt_password": "password",
+
 
 
 Start:
