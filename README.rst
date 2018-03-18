@@ -14,6 +14,7 @@ Configuration:
 
 Needs a json configuration file as follows (don't forget to change ip and credentials ;-)):
 
+
 .. code:: json
 
     {
@@ -36,6 +37,15 @@ Needs a json configuration file as follows (don't forget to change ip and creden
           ]
     }
 
+
+Optional json vaeriables:
+-------------------
+        // wait before query all sensors again (defaults to 300)
+        "wait_update": "60",
+        // wait between sensors (defaults to 5)
+        "wait_process": "3",
+        "mqtt_user": "username",
+        "mqtt_password": "password",
 
 
 Start:
