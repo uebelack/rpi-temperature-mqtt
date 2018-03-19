@@ -55,6 +55,9 @@ In case your mqtt has user and passwd
     
     "mqtt_password": "password",
 
+You may enable verbose mode to catch issues
+
+    "verbose": "true",
 
 
 Start:
