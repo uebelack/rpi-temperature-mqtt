@@ -82,7 +82,12 @@ class TemperatureLogger:
             for source in self.config['sources']:
                 serial = source['serial']
                 topic = source['topic']
-                device = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
+                try:
+                    # if sensor is disappearing we still want data from others
+                    device = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
+                except IOError:
+                    self.verbose("Sensor: {} not online or wrong id supplied!".format(serial))
+                    continue
                 raw = device.read()
                 device.close()
                 match = re.search(r't=([\d]+)', raw)
