@@ -52,7 +52,7 @@ class TemperatureLogger:
 
     def mqtt_on_disconnect(self, mqtt_client, userdata, rc):
         self.mqtt_connected = False
-        self.verbose('Diconnected! will reconnect! ...')
+        self.verbose('Disconnected! will reconnect! ...')
         if rc is 0:
             self.mqtt_connect()
         else:
@@ -72,11 +72,22 @@ class TemperatureLogger:
             return False
 
     def update(self):
+        wait_process = 5
+        wait_update = 300
+        if 'wait_process' in self.config:
+            wait_process = int(self.config['wait_process'])
+        if 'wait_update' in self.config:
+            wait_update = int(self.config['wait_update'])
         while True:
             for source in self.config['sources']:
                 serial = source['serial']
                 topic = source['topic']
-                device = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
+                try:
+                    # if sensor is disappearing we still want data from others
+                    device = open('/sys/bus/w1/devices/' + serial + '/w1_slave')
+                except IOError:
+                    self.verbose("Sensor: {} not online or wrong id supplied!".format(serial))
+                    continue
                 raw = device.read()
                 device.close()
                 match = re.search(r't=([\d]+)', raw)
@@ -90,8 +101,8 @@ class TemperatureLogger:
                     if serial not in self.temperatures or self.temperatures[serial] != temperature:
                         self.temperatures[serial] = temperature
                         self.publish_temperature(topic, temperature)
-                time.sleep(5)
-            time.sleep(300)
+                time.sleep(wait_process)
+            time.sleep(wait_update)
 
     def publish_temperature(self, topic, temperature):
         if self.mqtt_connected:
