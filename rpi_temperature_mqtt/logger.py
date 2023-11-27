@@ -90,10 +90,10 @@ class TemperatureLogger:
                     continue
                 raw = device.read()
                 device.close()
-                match = re.search(r't=([\d]+)', raw)
+                match = re.search(r't=(-?[\d]+)', raw)
                 if match:
                     temperature_raw = match.group(1)
-                    temperature = round(float(temperature_raw)/1000, 2)
+                    temperature = round(float(temperature_raw) / 1000.0, 2)
 
                     if 'offset' in source:
                         temperature += float(source['offset'])
